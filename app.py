@@ -29,34 +29,129 @@ import copy
 # Application Configuration
 st.set_page_config(
     layout="wide", 
-    page_title="Creator Revenue Modeler",
-    page_icon="🎙️",
-    initial_sidebar_state="expanded"
+    page_title="Revenue Modeler",
+    page_icon="📊",
+    initial_sidebar_state="collapsed"
 )
 
-# Minimal, clean global styling and chart theme
-pio.templates.default = "simple_white"
+# Ultra-clean, modern minimalist styling
+pio.templates.default = "plotly_white"
 st.markdown(
     """
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
     <style>
       :root {
-        --primary: #111827; /* slate-900 */
-        --accent: #2563eb;  /* blue-600 */
-        --muted: #6b7280;   /* gray-500 */
-        --card: #f7f7f9;
+        --text: #1a1a1a;
+        --text-light: #6b7280;
+        --border: #e5e7eb;
+        --bg: #ffffff;
+        --bg-subtle: #fafafa;
+        --accent: #3b82f6;
       }
+      
       html, body, [data-testid="stAppViewContainer"] {
-        font-family: 'Inter', ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
-        color: var(--primary);
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+        background: var(--bg);
+        color: var(--text);
       }
-      .block-container { padding-top: 2rem; padding-bottom: 2.5rem; }
-      h1, h2, h3 { letter-spacing: -0.01em; }
-      section[data-testid="stSidebar"] { background: #fff; }
-      footer, #MainMenu { visibility: hidden; }
-      .card { background: var(--card); border: 1px solid #ececf0; border-radius: 12px; padding: 16px; }
-      div[data-testid="stMetricValue"] { font-size: 1.5rem; }
-      div[data-testid="stMetricDelta"] { font-size: 0.9rem; color: var(--accent); }
+      
+      .main .block-container {
+        padding-top: 3rem;
+        padding-bottom: 3rem;
+        max-width: 1200px;
+      }
+      
+      /* Clean headers */
+      h1 {
+        font-weight: 600;
+        font-size: 2rem;
+        letter-spacing: -0.02em;
+        margin-bottom: 0.5rem;
+        color: var(--text);
+      }
+      
+      h2, h3 {
+        font-weight: 500;
+        letter-spacing: -0.01em;
+        color: var(--text);
+        margin-top: 2rem;
+        margin-bottom: 1rem;
+      }
+      
+      /* Clean sidebar */
+      section[data-testid="stSidebar"] {
+        background: var(--bg);
+        border-right: 1px solid var(--border);
+      }
+      
+      /* Hide Streamlit branding */
+      footer, #MainMenu, header {
+        visibility: hidden;
+      }
+      
+      /* Clean inputs */
+      .stSelectbox, .stSlider, .stNumberInput {
+        margin-bottom: 1rem;
+      }
+      
+      /* Minimal buttons */
+      .stButton button {
+        background: var(--bg);
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        color: var(--text);
+        font-weight: 500;
+        padding: 0.5rem 1rem;
+        transition: all 0.2s;
+      }
+      
+      .stButton button:hover {
+        border-color: var(--accent);
+        color: var(--accent);
+      }
+      
+      .stButton button[kind="primary"] {
+        background: var(--accent);
+        border-color: var(--accent);
+        color: white;
+      }
+      
+      /* Clean metrics */
+      div[data-testid="stMetricValue"] {
+        font-size: 1.75rem;
+        font-weight: 600;
+        color: var(--text);
+      }
+      
+      div[data-testid="stMetricDelta"] {
+        font-size: 0.875rem;
+        font-weight: 500;
+        color: var(--text-light);
+      }
+      
+      /* Clean expanders */
+      .streamlit-expanderHeader {
+        font-weight: 500;
+        color: var(--text);
+      }
+      
+      /* Clean data editor */
+      .stDataEditor {
+        border: 1px solid var(--border);
+        border-radius: 8px;
+      }
+      
+      /* Minimal alerts */
+      .stAlert {
+        border-radius: 8px;
+        border: none;
+        padding: 1rem;
+      }
+      
+      /* Clean spacing */
+      .element-container {
+        margin-bottom: 1rem;
+      }
     </style>
     """,
     unsafe_allow_html=True,
@@ -577,25 +672,9 @@ def validate_inputs_ui(inputs: dict) -> bool:
 
 # === MAIN APPLICATION UI ===
 
-st.title("🎙️🎬 Creator Revenue Intelligence Platform")
-st.markdown("""
-**Professional revenue modeling for modern content creators**
-
-📊 Model your podcast and YouTube revenue streams  
-🔮 Compare scenarios and growth strategies  
-📈 Export data for business planning  
-✅ Security-validated calculations
-""")
-
-# Performance metrics for transparency
-if st.sidebar.checkbox("🔧 Show Performance Info", value=False):
-    st.sidebar.info(f"""
-    **App Performance:**
-    - ✅ Optimized calculations
-    - ✅ 5min result caching
-    - ✅ Input validation
-    - ✅ Security hardened
-    """)
+# Clean, minimal header
+st.markdown("<h1 style='margin-bottom: 0;'>Revenue Modeler</h1>", unsafe_allow_html=True)
+st.markdown("<p style='color: #6b7280; margin-bottom: 2rem; font-size: 1.1rem;'>Professional revenue modeling for content creators</p>", unsafe_allow_html=True)
 
 # Initialize session state
 if 'inputs' not in st.session_state:
@@ -606,199 +685,206 @@ if 'inputs' not in st.session_state:
 if 'scenarios' not in st.session_state:
     st.session_state.scenarios = {}
 
-# --- Sidebar ---
-st.sidebar.header("Navigation")
-page = st.sidebar.radio("Go to", ["Inputs & Assumptions", "Results & Charts", "Scenario Comparison"])
-st.sidebar.markdown("---")
-st.sidebar.header("Data Ingestion (Stubs)")
-st.sidebar.file_uploader("Upload Podcast Stats (CSV/XLSX)", type=['csv', 'xlsx'])
-st.sidebar.file_uploader("Upload YouTube Stats (CSV/XLSX)", type=['csv', 'xlsx'])
+# Clean navigation tabs
+tab1, tab2, tab3 = st.tabs(["Setup", "Results", "Scenarios"])
 
-# --- Page 1: Inputs & Assumptions ---
-if page == "Inputs & Assumptions":
-    st.header("📊 Inputs & Assumptions")
+# Page content based on tab selection
+with tab1:  # Setup tab
     inputs = st.session_state.inputs
 
-    # --- Presets with better UX ---
-    st.subheader("🎯 Quick Start Presets")
-    col1, col2 = st.columns([2, 1])
+    # Clean preset selection
+    st.markdown("### Quick Start")
+    col1, col2 = st.columns([3, 1])
     with col1:
         preset_choice = st.selectbox(
-            "Choose a creator tier to get started", 
+            "Choose a creator tier", 
             options=["Custom", "Small Creator", "Mid-Tier Creator", "Large Creator"],
-            help="Presets provide realistic starting values for different creator sizes"
+            help="Select a preset to get started quickly",
+            label_visibility="collapsed"
         )
     with col2:
-        if preset_choice != "Custom" and st.button("Apply Preset", type="primary"):
+        if preset_choice != "Custom" and st.button("Apply", type="primary", use_container_width=True):
             if apply_preset(preset_choice, inputs):
-                st.success(f"✅ Applied '{preset_choice}' preset successfully!")
+                st.success(f"Applied {preset_choice} preset")
                 st.rerun()
-            
-    if preset_choice != "Custom":
-        st.info(f"💡 '{preset_choice}' preset ready to apply. Click 'Apply Preset' to load optimized values.")
 
-    with st.expander("🎙️ Audio Podcast Assumptions", expanded=True):
+    # Clean section headers
+    st.markdown("### Audio Podcast")
+    with st.container():
         use_manual_audio = st.toggle(
-            "📝 Manually input monthly podcast downloads", 
+            "Manual monthly input", 
             key="manual_audio_toggle",
-            help="Toggle on for detailed month-by-month control, or off for simple growth projections"
+            help="Enable for month-by-month control"
         )
         
         if use_manual_audio:
-            inputs['audio'].manual_monthly_downloads = create_manual_input_editor(
-                "Downloads", 
-                inputs['audio'].manual_monthly_downloads, 
-                inputs['audio'].monthly_downloads, 
-                "audio_editor"
-            )
+            st.markdown("**Monthly Downloads**")
+            if not inputs['audio'].manual_monthly_downloads or len(inputs['audio'].manual_monthly_downloads) != 12:
+                inputs['audio'].manual_monthly_downloads = [inputs['audio'].monthly_downloads] * 12
+            
+            # Clean 4x3 grid layout
+            for quarter in range(4):
+                cols = st.columns(3)
+                for month_in_quarter in range(3):
+                    month_idx = quarter * 3 + month_in_quarter
+                    if month_idx < 12:
+                        with cols[month_in_quarter]:
+                            inputs['audio'].manual_monthly_downloads[month_idx] = st.number_input(
+                                f"Month {month_idx + 1}",
+                                value=inputs['audio'].manual_monthly_downloads[month_idx],
+                                min_value=0,
+                                step=1000,
+                                key=f"audio_month_{month_idx}",
+                                label_visibility="visible"
+                            )
         else:
             inputs['audio'].manual_monthly_downloads = None
-            a_col1, a_col2 = st.columns(2)
-            with a_col1:
+            col1, col2 = st.columns(2)
+            with col1:
                 inputs['audio'].monthly_downloads = st.number_input(
-                    "📈 Avg Monthly Downloads", 
+                    "Monthly Downloads", 
                     value=inputs['audio'].monthly_downloads, 
-                    step=1000,
-                    min_value=1000,
-                    max_value=Constants.MAX_DOWNLOADS,
-                    help="Starting point for growth projection"
+                    step=1000, min_value=1000,
+                    help="Average downloads per month"
                 )
-            with a_col2:
+            with col2:
                 inputs['audio'].monthly_growth_pct = st.slider(
-                    "📊 Monthly Growth Rate %", 
-                    -50.0, 50.0, 
-                    inputs['audio'].monthly_growth_pct * 100, 
-                    1.0,
-                    help="Realistic range: 1-5% monthly growth"
+                    "Growth Rate %", 
+                    -20, 20, 
+                    int(inputs['audio'].monthly_growth_pct * 100),
+                    help="Month-over-month growth"
                 ) / 100
         
         st.markdown("---")
         # Other audio inputs... (omitted for brevity, same as before)
-        st.subheader("General Audio Ad Settings")
-        g_col1, g_col2 = st.columns(2)
-        with g_col1:
-            inputs['audio'].pct_us = st.slider("US Download %", 0.0, 1.0, inputs['audio'].pct_us, 0.05, help=AudioInputs.model_fields['pct_us'].description)
-            inputs['audio'].sell_through_rate = st.slider("Ad Sell-Through Rate", 0.0, 1.0, inputs['audio'].sell_through_rate, 0.05, help=AudioInputs.model_fields['sell_through_rate'].description)
-            inputs['audio'].direct_programmatic_split = st.slider("Direct vs. Programmatic Split", 0.0, 1.0, inputs['audio'].direct_programmatic_split, 0.05, help=AudioInputs.model_fields['direct_programmatic_split'].description)
-        with g_col2:
-            inputs['audio'].direct_rpm = st.slider("Direct Sold Ad RPM ($)", 10, 100, inputs['audio'].direct_rpm, 1, help=AudioInputs.model_fields['direct_rpm'].description)
-            inputs['audio'].programmatic_rpm = st.slider("Programmatic Ad RPM ($)", 5, 50, inputs['audio'].programmatic_rpm, 1, help=AudioInputs.model_fields['programmatic_rpm'].description)
-
-        st.subheader("Ad Load")
+        # Clean, simple inputs
+        col1, col2 = st.columns(2)
+        with col1:
+            inputs['audio'].pct_us = st.slider("US Downloads %", 0, 100, int(inputs['audio'].pct_us*100), help="Percentage from US market") / 100
+            inputs['audio'].sell_through_rate = st.slider("Sell-through Rate %", 0, 100, int(inputs['audio'].sell_through_rate*100)) / 100
+            inputs['audio'].direct_rpm = st.number_input("Direct RPM $", 10, 100, inputs['audio'].direct_rpm, help="Revenue per thousand for direct ads")
+        with col2:
+            inputs['audio'].direct_programmatic_split = st.slider("Direct vs Programmatic %", 0, 100, int(inputs['audio'].direct_programmatic_split*100)) / 100
+            inputs['audio'].programmatic_rpm = st.number_input("Programmatic RPM $", 5, 50, inputs['audio'].programmatic_rpm, help="Revenue per thousand for programmatic ads")
+        
+        st.markdown("**Ad Slots**")
         ad_col1, ad_col2, ad_col3 = st.columns(3)
-        inputs['audio'].ad_load_pre = ad_col1.number_input("Pre-Rolls", value=inputs['audio'].ad_load_pre, min_value=0, max_value=5, step=1, help=AudioInputs.model_fields['ad_load_pre'].description)
-        inputs['audio'].ad_load_mid = ad_col2.number_input("Mid-Rolls", value=inputs['audio'].ad_load_mid, min_value=0, max_value=10, step=1, help=AudioInputs.model_fields['ad_load_mid'].description)
-        inputs['audio'].ad_load_post = ad_col3.number_input("Post-Rolls", value=inputs['audio'].ad_load_post, min_value=0, max_value=5, step=1, help=AudioInputs.model_fields['ad_load_post'].description)
+        inputs['audio'].ad_load_pre = ad_col1.number_input("Pre-roll", 0, 5, inputs['audio'].ad_load_pre, help="Ads before content")
+        inputs['audio'].ad_load_mid = ad_col2.number_input("Mid-roll", 0, 10, inputs['audio'].ad_load_mid, help="Ads during content")
+        inputs['audio'].ad_load_post = ad_col3.number_input("Post-roll", 0, 5, inputs['audio'].ad_load_post, help="Ads after content")
 
 
-    with st.expander("🎬 YouTube Channel Assumptions", expanded=True):
+    st.markdown("### YouTube Channel")
+    with st.container():
         use_manual_youtube = st.toggle(
-            "📝 Manually input monthly YouTube views", 
+            "Manual monthly input", 
             key="manual_youtube_toggle",
-            help="Enable for month-by-month view control or use growth projections"
+            help="Enable for month-by-month control"
         )
         
         if use_manual_youtube:
-            inputs['youtube'].manual_monthly_views = create_manual_input_editor(
-                "Views", 
-                inputs['youtube'].manual_monthly_views, 
-                inputs['youtube'].monthly_views, 
-                "yt_editor"
-            )
+            st.markdown("**Monthly Views**")
+            if not inputs['youtube'].manual_monthly_views or len(inputs['youtube'].manual_monthly_views) != 12:
+                inputs['youtube'].manual_monthly_views = [inputs['youtube'].monthly_views] * 12
+            
+            # Clean 4x3 grid layout
+            for quarter in range(4):
+                cols = st.columns(3)
+                for month_in_quarter in range(3):
+                    month_idx = quarter * 3 + month_in_quarter
+                    if month_idx < 12:
+                        with cols[month_in_quarter]:
+                            inputs['youtube'].manual_monthly_views[month_idx] = st.number_input(
+                                f"Month {month_idx + 1}",
+                                value=inputs['youtube'].manual_monthly_views[month_idx],
+                                min_value=0,
+                                step=10000,
+                                key=f"youtube_month_{month_idx}",
+                                label_visibility="visible"
+                            )
         else:
             inputs['youtube'].manual_monthly_views = None
-            y_col1, y_col2 = st.columns(2)
-            with y_col1:
+            col1, col2 = st.columns(2)
+            with col1:
                 inputs['youtube'].monthly_views = st.number_input(
-                    "📈 Avg Monthly Views", 
+                    "Monthly Views", 
                     value=inputs['youtube'].monthly_views, 
-                    step=10000,
-                    min_value=1000,
-                    max_value=Constants.MAX_VIEWS,
-                    help="Starting monthly view count"
+                    step=10000, min_value=1000,
+                    help="Average views per month"
                 )
-            with y_col2:
+            with col2:
                 inputs['youtube'].monthly_growth_pct = st.slider(
-                    "📊 Monthly View Growth Rate %", 
-                    -50.0, 50.0, 
-                    inputs['youtube'].monthly_growth_pct * 100, 
-                    1.0,
-                    help="Realistic range: 2-8% monthly growth"
+                    "Growth Rate %", 
+                    -20, 20, 
+                    int(inputs['youtube'].monthly_growth_pct * 100),
+                    help="Month-over-month growth"
                 ) / 100
         
         st.markdown("---")
         # Other YouTube inputs... (omitted for brevity, same as before)
-        st.subheader("General YouTube Monetization Settings")
-        m_col1, m_col2 = st.columns(2)
-        with m_col1:
-            inputs['youtube'].pct_monetizable_views = st.slider("Monetizable View %", 0.0, 1.0, inputs['youtube'].pct_monetizable_views, 0.05, help=YouTubeInputs.model_fields['pct_monetizable_views'].description)
-        with m_col2:
-            inputs['youtube'].adsense_rpm = st.slider("AdSense RPM ($)", 1, 30, inputs['youtube'].adsense_rpm, 1, help=YouTubeInputs.model_fields['adsense_rpm'].description)
+        col1, col2 = st.columns(2)
+        with col1:
+            inputs['youtube'].pct_monetizable_views = st.slider("Monetizable Views %", 0, 100, int(inputs['youtube'].pct_monetizable_views*100)) / 100
+        with col2:
+            inputs['youtube'].adsense_rpm = st.number_input("AdSense RPM $", 1, 30, inputs['youtube'].adsense_rpm, help="Revenue per thousand views")
 
 
-    with st.expander("💰 Revenue, Costs & Splits", expanded=False):
-        o_col1, o_col2, o_col3 = st.columns(3)
-        with o_col1:
-            st.subheader("🔄 Other Revenue Streams")
+    st.markdown("### Revenue & Costs")
+    with st.container():
+        col1, col2, col3 = st.columns(3)
+        with col1:
+            st.markdown("**Other Revenue**")
             inputs['other'].subscriptions_monthly = st.number_input(
-                "🎟️ Monthly Subscriptions ($)", 
+                "Subscriptions $", 
                 value=inputs['other'].subscriptions_monthly, 
-                step=100,
-                min_value=0, max_value=1_000_000,
-                help="Patreon, YouTube memberships, etc."
+                step=100, min_value=0,
+                help="Patreon, memberships"
             )
             inputs['other'].affiliate_monthly = st.number_input(
-                "🔗 Monthly Affiliate ($)", 
+                "Affiliate $", 
                 value=inputs['other'].affiliate_monthly, 
-                step=50,
-                min_value=0, max_value=500_000,
-                help="Commission from product recommendations"
+                step=50, min_value=0,
+                help="Commission income"
             )
             inputs['other'].other_monthly = st.number_input(
-                "🛍️ Other Monthly Income ($)", 
+                "Other Income $", 
                 value=inputs['other'].other_monthly, 
-                step=50,
-                min_value=0, max_value=500_000,
-                help="Merchandise, one-off sponsorships, etc."
+                step=50, min_value=0,
+                help="Merch, sponsorships"
             )
-        with o_col2:
-            st.subheader("📊 Business Costs")
+        with col2:
+            st.markdown("**Business Costs**")
             inputs['costs'].fixed_monthly = st.number_input(
-                "💵 Fixed Monthly Costs ($)", 
+                "Fixed Costs $", 
                 value=inputs['costs'].fixed_monthly, 
-                step=100,
-                min_value=0, max_value=1_000_000,
-                help="Salaries, software subscriptions, hosting"
+                step=100, min_value=0,
+                help="Salaries, software, hosting"
             )
             inputs['costs'].variable_pct_gross = st.slider(
-                "📉 Variable Costs (% of Gross)", 
-                0.0, 80.0, 
-                inputs['costs'].variable_pct_gross * 100, 
-                1.0,
-                help="Editing, commissions, payment processing"
+                "Variable Costs %", 
+                0, 50, 
+                int(inputs['costs'].variable_pct_gross * 100),
+                help="Editing, commissions"
             ) / 100
-        with o_col3:
-            st.subheader("🎂 Revenue Splits")
-            st.info("🔒 YouTube fee locked at 45% (platform standard)")
+        with col3:
+            st.markdown("**Revenue Splits**")
+            st.caption("YouTube fee: 45% (platform standard)")
             inputs['splits'].agency_fee_pct = st.slider(
-                "🏢 Agency Fee %", 
-                0.0, 50.0, 
-                inputs['splits'].agency_fee_pct * 100, 
-                1.0,
-                help="Management or MCN fees"
+                "Agency Fee %", 
+                0, 30, 
+                int(inputs['splits'].agency_fee_pct * 100),
+                help="Management fees"
             ) / 100
             inputs['splits'].creator_share_pct = st.slider(
-                "🎨 Creator Final Share %", 
-                10.0, 100.0, 
-                inputs['splits'].creator_share_pct * 100, 
-                5.0,
-                help="Your take of the final distributable revenue"
+                "Creator Share %", 
+                50, 100, 
+                int(inputs['splits'].creator_share_pct * 100),
+                help="Your final take"
             ) / 100
 
 
-# --- Page 2: Results & Charts ---
-elif page == "Results & Charts":
-    st.header("📈 Results & Analytics")
+with tab2:  # Results tab
+    st.markdown("### Revenue Analysis")
     
     # --- Enhanced Input Validation ---
     if not validate_inputs_ui(st.session_state.inputs):
@@ -816,7 +902,7 @@ elif page == "Results & Charts":
             st.info("🔧 Please check your input values and try again. If the problem persists, try resetting to default values.")
             st.stop()
 
-    st.subheader("🏆 Annual Key Metrics")
+    st.markdown("### Key Metrics")
     kpi_col1, kpi_col2, kpi_col3, kpi_col4 = st.columns(4)
     
     # Calculate profit margin for better insights
@@ -846,39 +932,53 @@ elif page == "Results & Charts":
         help=f"Your final take-home: ~${monthly_avg:,.0f}/month"
     )
 
-    c_col1, c_col2 = st.columns(2)
-    with c_col1:
-        st.subheader("Revenue by Stream (Monthly)")
+    col1, col2 = st.columns(2)
+    with col1:
+        st.markdown("**Monthly Revenue by Stream**")
         months = df['Month']
         rev_fig = go.Figure()
-        rev_fig.add_trace(go.Bar(name="Audio", x=months, y=df['Gross Audio Revenue'], marker_color="#111827"))
-        rev_fig.add_trace(go.Bar(name="YouTube", x=months, y=df['Gross YouTube Revenue'], marker_color="#2563eb"))
-        rev_fig.add_trace(go.Bar(name="Other", x=months, y=df['Gross Other Revenue'], marker_color="#10b981"))
+        rev_fig.add_trace(go.Bar(name="Audio", x=months, y=df['Gross Audio Revenue'], marker_color="#1a1a1a"))
+        rev_fig.add_trace(go.Bar(name="YouTube", x=months, y=df['Gross YouTube Revenue'], marker_color="#3b82f6"))
+        rev_fig.add_trace(go.Bar(name="Other", x=months, y=df['Gross Other Revenue'], marker_color="#6b7280"))
         rev_fig.update_layout(
             barmode="group",
-            legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1),
-            margin=dict(t=20, b=40, l=10, r=10),
+            showlegend=True,
+            legend=dict(orientation="h", yanchor="bottom", y=-0.2),
+            margin=dict(t=10, b=60, l=10, r=10),
+            plot_bgcolor="white",
+            paper_bgcolor="white",
+            font=dict(family="Inter", size=12, color="#1a1a1a"),
+            xaxis=dict(showgrid=False),
+            yaxis=dict(showgrid=True, gridcolor="#f5f5f5")
         )
         st.plotly_chart(rev_fig, use_container_width=True)
 
-    with c_col2:
-        st.subheader("Annual Gross-to-Net Waterfall (Interactive)")
+    with col2:
+        st.markdown("**Revenue Breakdown**")
         net_to_others = annual_summary['Distributable Revenue'] - annual_summary['Creator Net Revenue']
         fig = go.Figure(go.Waterfall(
             name="Revenue", orientation="v",
             measure=["absolute", "relative", "relative", "relative", "relative", "total"],
-            x=["Gross Revenue", "Platform Fees", "Business Costs", "Agency Fees", "Co-creator/Partner Share", "Creator Net Revenue"],
+            x=["Gross", "Platform Fees", "Costs", "Agency", "Partners", "Creator Net"],
             text=[f"${v:,.0f}" for v in [annual_summary['Total Gross Revenue'], -annual_summary['Platform Fees'], -annual_summary['Total Business Costs'], -annual_summary['Agency Fees'], -net_to_others, annual_summary['Creator Net Revenue']]],
             y=[annual_summary['Total Gross Revenue'], -annual_summary['Platform Fees'], -annual_summary['Total Business Costs'], -annual_summary['Agency Fees'], -net_to_others, 0],
-            connector={"line": {"color": "rgb(107, 114, 128)"}},
-            increasing={"marker": {"color": "#10b981"}},
-            decreasing={"marker": {"color": "#ef4444"}},
-            totals={"marker": {"color": "#111827"}},
+            connector={"line": {"color": "#e5e7eb", "width": 1}},
+            increasing={"marker": {"color": "#1a1a1a"}},
+            decreasing={"marker": {"color": "#6b7280"}},
+            totals={"marker": {"color": "#3b82f6"}},
         ))
-        fig.update_layout(title="Annual Gross-to-Net Waterfall", showlegend=False, margin=dict(t=20, b=40, l=10, r=10))
+        fig.update_layout(
+            showlegend=False, 
+            margin=dict(t=10, b=40, l=10, r=10),
+            plot_bgcolor="white",
+            paper_bgcolor="white",
+            font=dict(family="Inter", size=12, color="#1a1a1a"),
+            xaxis=dict(showgrid=False),
+            yaxis=dict(showgrid=True, gridcolor="#f5f5f5")
+        )
         st.plotly_chart(fig, use_container_width=True)
 
-    st.subheader("Detailed Monthly Breakdown")
+    st.markdown("### Monthly Breakdown")
     # Display logic is the same...
     display_df = df.copy()
     for col in display_df.columns:
@@ -918,10 +1018,9 @@ elif page == "Results & Charts":
         )
 
 
-# --- Page 3: Scenario Comparison ---
-elif page == "Scenario Comparison":
-    st.header("🔄 Scenario Comparison")
-    st.markdown("🎨 **Compare different strategies:** Save your current setup as a scenario, then adjust inputs to see how changes impact your revenue.")
+with tab3:  # Scenarios tab
+    st.markdown("### Scenario Comparison")
+    st.markdown("Save and compare different revenue strategies to optimize your approach.")
 
     col1, _ = st.columns([1, 2])
     with col1:
@@ -959,7 +1058,7 @@ elif page == "Scenario Comparison":
             })
 
         comparison_df = pd.DataFrame(comparison_data).set_index("Scenario")
-        st.subheader("Scenario Summary")
+        st.markdown("**Scenario Comparison**")
         st.dataframe(comparison_df.style.format({
             "Annual Gross Revenue": "${:,.0f}",
             "Annual Creator Net": "${:,.0f}",
