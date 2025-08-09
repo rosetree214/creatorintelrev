@@ -17,6 +17,7 @@ Last Updated: 2025
 """
 
 import streamlit as st
+import streamlit.components.v1 as components
 import pandas as pd
 import numpy as np
 import plotly.graph_objects as go
@@ -46,131 +47,37 @@ st.set_page_config(
 
 # Ultra-clean, modern minimalist styling
 pio.templates.default = "plotly_white"
-st.markdown(
-    """
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
-    <style>
-      :root {
-        --text: #1a1a1a;
-        --text-light: #6b7280;
-        --border: #e5e7eb;
-        --bg: #ffffff;
-        --bg-subtle: #fafafa;
-        --accent: #3b82f6;
-      }
-      
-      html, body, [data-testid="stAppViewContainer"] {
-        font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-        background: var(--bg);
-        color: var(--text);
-      }
-      
-      /* Remove default Streamlit top spacing/header gap */
-      [data-testid="stHeader"] { display: none; height: 0; }
-      [data-testid="stToolbar"] { display: none; }
-      [data-testid="stAppViewContainer"] > .main { padding-top: 0 !important; }
 
-      .main .block-container {
-        padding-top: 1.25rem;
-        padding-bottom: 2rem;
-        max-width: 1200px;
-      }
-      
-      /* Clean headers */
-      h1 {
-        font-weight: 600;
-        font-size: 2rem;
-        letter-spacing: -0.02em;
-        margin: 0 0 0.5rem 0;
-        color: var(--text);
-      }
-      
-      h2, h3 {
-        font-weight: 500;
-        letter-spacing: -0.01em;
-        color: var(--text);
-        margin-top: 1.5rem;
-        margin-bottom: 1rem;
-      }
-      
-      /* Clean sidebar */
-      section[data-testid="stSidebar"] {
-        background: var(--bg);
-        border-right: 1px solid var(--border);
-      }
-      
-      /* Hide Streamlit branding */
-      footer, #MainMenu, header { visibility: hidden; height: 0; }
-      
-      /* Clean inputs */
-      .stSelectbox, .stSlider, .stNumberInput {
-        margin-bottom: 1rem;
-      }
-      
-      /* Minimal buttons */
-      .stButton button {
-        background: var(--bg);
-        border: 1px solid var(--border);
-        border-radius: 8px;
-        color: var(--text);
-        font-weight: 500;
-        padding: 0.5rem 1rem;
-        transition: all 0.2s;
-      }
-      
-      .stButton button:hover {
-        border-color: var(--accent);
-        color: var(--accent);
-      }
-      
-      .stButton button[kind="primary"] {
-        background: var(--accent);
-        border-color: var(--accent);
-        color: white;
-      }
-      
-      /* Clean metrics */
-      div[data-testid="stMetricValue"] {
-        font-size: 1.75rem;
-        font-weight: 600;
-        color: var(--text);
-      }
-      
-      div[data-testid="stMetricDelta"] {
-        font-size: 0.875rem;
-        font-weight: 500;
-        color: var(--text-light);
-      }
-      
-      /* Clean expanders */
-      .streamlit-expanderHeader {
-        font-weight: 500;
-        color: var(--text);
-      }
-      
-      /* Clean data editor */
-      .stDataEditor {
-        border: 1px solid var(--border);
-        border-radius: 8px;
-      }
-      
-      /* Minimal alerts */
-      .stAlert {
-        border-radius: 8px;
-        border: none;
-        padding: 1rem;
-      }
-      
-      /* Clean spacing */
-      .element-container {
-        margin-bottom: 1rem;
-      }
-    </style>
-    """,
-    unsafe_allow_html=True,
-)
+_GLOBAL_STYLE = """
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root { --text:#1a1a1a; --text-light:#6b7280; --border:#e5e7eb; --bg:#ffffff; --bg-subtle:#fafafa; --accent:#3b82f6; }
+  html, body, [data-testid="stAppViewContainer"] { font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; background:var(--bg); color:var(--text); }
+  [data-testid="stHeader"] { display:none; height:0; }
+  [data-testid="stToolbar"] { display:none; }
+  [data-testid="stAppViewContainer"] > .main { padding-top:0 !important; }
+  .main .block-container { padding-top:1.25rem; padding-bottom:2rem; max-width:1200px; }
+  h1 { font-weight:600; font-size:2rem; letter-spacing:-0.02em; margin:0 0 0.5rem 0; color:var(--text); }
+  h2, h3 { font-weight:500; letter-spacing:-0.01em; color:var(--text); margin-top:1.5rem; margin-bottom:1rem; }
+  section[data-testid="stSidebar"] { background:var(--bg); border-right:1px solid var(--border); }
+  footer, #MainMenu, header { visibility:hidden; height:0; }
+  .stSelectbox, .stSlider, .stNumberInput { margin-bottom:1rem; }
+  .stButton button { background:var(--bg); border:1px solid var(--border); border-radius:8px; color:var(--text); font-weight:500; padding:0.5rem 1rem; transition:all .2s; }
+  .stButton button:hover { border-color:var(--accent); color:var(--accent); }
+  .stButton button[kind="primary"] { background:var(--accent); border-color:var(--accent); color:#fff; }
+  div[data-testid="stMetricValue"] { font-size:1.75rem; font-weight:600; color:var(--text); }
+  div[data-testid="stMetricDelta"] { font-size:.875rem; font-weight:500; color:var(--text-light); }
+  .streamlit-expanderHeader { font-weight:500; color:var(--text); }
+  .stDataEditor { border:1px solid var(--border); border-radius:8px; }
+  .stAlert { border-radius:8px; border:none; padding:1rem; }
+  .element-container { margin-bottom:1rem; }
+</style>
+"""
+
+# Use components.html to ensure CSS is not escaped on Streamlit Cloud
+components.html(_GLOBAL_STYLE, height=0)
 
 @st.cache_data(ttl=300)
 def cached_run_annual_projection(_audio: dict, _youtube: dict, _other: dict, _costs: dict, _splits: dict) -> pd.DataFrame:
