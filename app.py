@@ -48,6 +48,8 @@ st.set_page_config(
 pio.templates.default = "plotly_white"
 st.markdown(
     """
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
     <style>
       :root {
@@ -65,9 +67,14 @@ st.markdown(
         color: var(--text);
       }
       
+      /* Remove default Streamlit top spacing/header gap */
+      [data-testid="stHeader"] { display: none; height: 0; }
+      [data-testid="stToolbar"] { display: none; }
+      [data-testid="stAppViewContainer"] > .main { padding-top: 0 !important; }
+
       .main .block-container {
-        padding-top: 3rem;
-        padding-bottom: 3rem;
+        padding-top: 1.25rem;
+        padding-bottom: 2rem;
         max-width: 1200px;
       }
       
@@ -76,7 +83,7 @@ st.markdown(
         font-weight: 600;
         font-size: 2rem;
         letter-spacing: -0.02em;
-        margin-bottom: 0.5rem;
+        margin: 0 0 0.5rem 0;
         color: var(--text);
       }
       
@@ -84,7 +91,7 @@ st.markdown(
         font-weight: 500;
         letter-spacing: -0.01em;
         color: var(--text);
-        margin-top: 2rem;
+        margin-top: 1.5rem;
         margin-bottom: 1rem;
       }
       
@@ -95,9 +102,7 @@ st.markdown(
       }
       
       /* Hide Streamlit branding */
-      footer, #MainMenu, header {
-        visibility: hidden;
-      }
+      footer, #MainMenu, header { visibility: hidden; height: 0; }
       
       /* Clean inputs */
       .stSelectbox, .stSlider, .stNumberInput {
