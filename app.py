@@ -345,7 +345,8 @@ with tab1:  # Setup tab
                     "Growth Rate %", 
                     -20, 20, 
                     int(inputs['audio'].monthly_growth_pct * 100),
-                    help="Month-over-month growth"
+                    help="Month-over-month growth",
+                    key="audio_growth_pct"
                 ) / 100
         
         st.markdown("---")
@@ -410,7 +411,8 @@ with tab1:  # Setup tab
                     "Growth Rate %", 
                     -20, 20, 
                     int(inputs['youtube'].monthly_growth_pct * 100),
-                    help="Month-over-month growth"
+                    help="Month-over-month growth",
+                    key="youtube_growth_pct"
                 ) / 100
         
         st.markdown("---")
